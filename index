@@ -1,277 +1,242 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AMC — Answer Sheet</title>
-    <style>
-      :root {
-        --accent: #0b76ef;
-        --paper: #fff;
-        --muted: #666;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: Inter, ui-sans-serif, system-ui, Helvetica, Arial;
-        background: #f4f6f9;
-        color: #111;
-        padding: 24px;
-      }
-      .sheet {
-        max-width: 900px;
-        margin: 0 auto;
-        background: var(--paper);
-        padding: 18px;
-        border-radius: 10px;
-        box-shadow: 0 6px 30px rgba(10, 20, 40, 0.06);
-      }
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 18px;
-      }
-      .meta {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .meta input {
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid #e3e7ee;
-      }
-      .controls {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-      button {
-        background: var(--accent);
-        color: #fff;
-        border: 0;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-      button.ghost {
-        background: transparent;
-        color: var(--accent);
-        border: 1px solid rgba(11, 118, 239, 0.12);
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin-top: 14px;
-      }
-      .block {
-        background: #fbfdff;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #eef3fb;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      th,
-      td {
-        padding: 6px;
-        text-align: center;
-      }
-      .qnum {
-        width: 42px;
-        text-align: left;
-        padding-left: 8px;
-        font-weight: 600;
-        color: var(--muted);
-      }
-      .choices {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-      }
-      .bubble {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        border: 2px solid #cbd6e6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        user-select: none;
-      }
-      .bubble.selected {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #fff;
-      }
-      .footer {
-        margin-top: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      /* print styles */
-      @media print {
-        body {
-          background: #fff;
-        }
-        .sheet {
-          box-shadow: none;
-          border: none;
-        }
-        .controls {
-          display: none;
-        }
-        .bubble {
-          border: 1px solid #000;
-          background: transparent;
-          color: #000;
-        }
-        .bubble.selected {
-          background: #000;
-          color: #fff;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="sheet" role="application" aria-label="AMC 10 Answer Sheet">
-      <header>
-        <div>
-          <h1>AMC 10 — Answer Sheet</h1>
-          <div class="meta">
-            <input
-              id="studentName"
-              placeholder="Name"
-              aria-label="Student name"
-            />
-            <input id="school" placeholder="School / Team (optional)" />
-            <input id="contestDate" type="date" />
-          </div>
-        </div>
-        <div class="controls">
-          <button id="downloadBtn">Download</button>
-          <button id="printBtn" class="ghost">Print</button>
-        </div>
-      </header>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AMC 10 — Answer Sheet (HTML & CSS only)</title>
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/3f/AMC_logo.png" />
+  <style>
+    :root{
+      --accent:#0b76ef;
+      --paper:#fff;
+      --muted:#666;
+      --bubble-size:34px;
+      --gap:10px;
+      --radius:50%;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Helvetica,Arial;background:#f4f6f9;color:#111;padding:24px}
+    .sheet{max-width:960px;margin:0 auto;background:var(--paper);padding:18px;border-radius:10px;box-shadow:0 6px 30px rgba(10,20,40,0.06)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    header h1{margin:0;font-size:18px}
+    .meta{display:flex;gap:12px;flex-wrap:wrap}
+    .meta input{padding:8px;border-radius:6px;border:1px solid #e3e7ee}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+    .block{background:#fbfdff;padding:12px;border-radius:8px;border:1px solid #eef3fb}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:6px;text-align:center}
+    .qnum{width:42px;text-align:left;padding-left:8px;font-weight:700;color:var(--muted)}
 
-      <main class="grid">
-        <section class="block" aria-label="Questions 1 to 13">
-          <h3 style="margin: 0 0 8px 0">Questions 1–13</h3>
-          <table>
-            <tbody id="leftCol"></tbody>
-          </table>
-        </section>
+    /* hide native radio */
+    input[type="radio"]{position:absolute;opacity:0;pointer-events:none}
 
-        <section class="block" aria-label="Questions 14 to 25">
-          <h3 style="margin: 0 0 8px 0">Questions 14–25</h3>
-          <table>
-            <tbody id="rightCol"></tbody>
-          </table>
-        </section>
-      </main>
+    .choices{display:flex;gap:var(--gap);justify-content:center;align-items:center}
+    .choice-label{
+      width:var(--bubble-size);height:var(--bubble-size);display:inline-grid;place-items:center;border-radius:var(--radius);border:2px solid #cbd6e6;cursor:pointer;user-select:none;font-weight:700}
 
-      <div class="footer">
-        <div style="font-size: 13px; color: var(--muted)">
-          Click a bubble to set your answer. Once chosen, it cannot be removed.
-          Printable — use Print button or Ctrl/Cmd+P
+    /* when corresponding radio is checked, style label */
+    input[type="radio"]:checked + label{
+      background:var(--accent);
+      color:white;
+      border-color:var(--accent);
+    }
+
+    /* make rows tight */
+    tr{border-bottom:1px solid transparent}
+    .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:760px){
+      .grid{grid-template-columns:1fr}
+      .meta{flex-direction:column}
+    }
+
+    /* print styles - keeps selected states visible */
+    @media print{
+      body{background:#fff}
+      .sheet{box-shadow:none;border:none}
+      .meta, header .controls{display:none}
+      input[type="radio"]{display:none}
+      .choice-label{border:1px solid #000;color:#000}
+      input[type="radio"]:checked + label{background:#000;color:#fff;border-color:#000}
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet" role="application" aria-label="AMC 10 Answer Sheet">
+    <header>
+      <div>
+        <h1>AMC 10 — Answer Sheet</h1>
+        <div class="meta">
+          <input id="studentName" placeholder="Name" aria-label="Student name" />
+          <input id="school" placeholder="School / Team (optional)" />
+          <input id="contestDate" type="date" />
         </div>
       </div>
+      <div class="controls" aria-hidden="true">
+        <!-- No JavaScript: use browser Print (Ctrl/Cmd+P) to print the filled sheet -->
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="block" aria-label="Questions 1 to 13">
+        <h3 style="margin:0 0 8px 0">Questions 1–13</h3>
+        <table>
+          <tbody>
+            <!-- Generate rows 1..13 -->
+            
+            <!-- Rows 1 to 13 -->
+            <tr>
+              <td class="qnum">1.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q1_A" name="q1"><label class="choice-label" for="q1_A">A</label>
+                <input type="radio" id="q1_B" name="q1"><label class="choice-label" for="q1_B">B</label>
+                <input type="radio" id="q1_C" name="q1"><label class="choice-label" for="q1_C">C</label>
+                <input type="radio" id="q1_D" name="q1"><label class="choice-label" for="q1_D">D</label>
+                <input type="radio" id="q1_E" name="q1"><label class="choice-label" for="q1_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">2.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q2_A" name="q2"><label class="choice-label" for="q2_A">A</label>
+                <input type="radio" id="q2_B" name="q2"><label class="choice-label" for="q2_B">B</label>
+                <input type="radio" id="q2_C" name="q2"><label class="choice-label" for="q2_C">C</label>
+                <input type="radio" id="q2_D" name="q2"><label class="choice-label" for="q2_D">D</label>
+                <input type="radio" id="q2_E" name="q2"><label class="choice-label" for="q2_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">3.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q3_A" name="q3"><label class="choice-label" for="q3_A">A</label>
+                <input type="radio" id="q3_B" name="q3"><label class="choice-label" for="q3_B">B</label>
+                <input type="radio" id="q3_C" name="q3"><label class="choice-label" for="q3_C">C</label>
+                <input type="radio" id="q3_D" name="q3"><label class="choice-label" for="q3_D">D</label>
+                <input type="radio" id="q3_E" name="q3"><label class="choice-label" for="q3_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">4.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q4_A" name="q4"><label class="choice-label" for="q4_A">A</label>
+                <input type="radio" id="q4_B" name="q4"><label class="choice-label" for="q4_B">B</label>
+                <input type="radio" id="q4_C" name="q4"><label class="choice-label" for="q4_C">C</label>
+                <input type="radio" id="q4_D" name="q4"><label class="choice-label" for="q4_D">D</label>
+                <input type="radio" id="q4_E" name="q4"><label class="choice-label" for="q4_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">5.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q5_A" name="q5"><label class="choice-label" for="q5_A">A</label>
+                <input type="radio" id="q5_B" name="q5"><label class="choice-label" for="q5_B">B</label>
+                <input type="radio" id="q5_C" name="q5"><label class="choice-label" for="q5_C">C</label>
+                <input type="radio" id="q5_D" name="q5"><label class="choice-label" for="q5_D">D</label>
+                <input type="radio" id="q5_E" name="q5"><label class="choice-label" for="q5_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">6.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q6_A" name="q6"><label class="choice-label" for="q6_A">A</label>
+                <input type="radio" id="q6_B" name="q6"><label class="choice-label" for="q6_B">B</label>
+                <input type="radio" id="q6_C" name="q6"><label class="choice-label" for="q6_C">C</label>
+                <input type="radio" id="q6_D" name="q6"><label class="choice-label" for="q6_D">D</label>
+                <input type="radio" id="q6_E" name="q6"><label class="choice-label" for="q6_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">7.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q7_A" name="q7"><label class="choice-label" for="q7_A">A</label>
+                <input type="radio" id="q7_B" name="q7"><label class="choice-label" for="q7_B">B</label>
+                <input type="radio" id="q7_C" name="q7"><label class="choice-label" for="q7_C">C</label>
+                <input type="radio" id="q7_D" name="q7"><label class="choice-label" for="q7_D">D</label>
+                <input type="radio" id="q7_E" name="q7"><label class="choice-label" for="q7_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">8.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q8_A" name="q8"><label class="choice-label" for="q8_A">A</label>
+                <input type="radio" id="q8_B" name="q8"><label class="choice-label" for="q8_B">B</label>
+                <input type="radio" id="q8_C" name="q8"><label class="choice-label" for="q8_C">C</label>
+                <input type="radio" id="q8_D" name="q8"><label class="choice-label" for="q8_D">D</label>
+                <input type="radio" id="q8_E" name="q8"><label class="choice-label" for="q8_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">9.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q9_A" name="q9"><label class="choice-label" for="q9_A">A</label>
+                <input type="radio" id="q9_B" name="q9"><label class="choice-label" for="q9_B">B</label>
+                <input type="radio" id="q9_C" name="q9"><label class="choice-label" for="q9_C">C</label>
+                <input type="radio" id="q9_D" name="q9"><label class="choice-label" for="q9_D">D</label>
+                <input type="radio" id="q9_E" name="q9"><label class="choice-label" for="q9_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">10.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q10_A" name="q10"><label class="choice-label" for="q10_A">A</label>
+                <input type="radio" id="q10_B" name="q10"><label class="choice-label" for="q10_B">B</label>
+                <input type="radio" id="q10_C" name="q10"><label class="choice-label" for="q10_C">C</label>
+                <input type="radio" id="q10_D" name="q10"><label class="choice-label" for="q10_D">D</label>
+                <input type="radio" id="q10_E" name="q10"><label class="choice-label" for="q10_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">11.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q11_A" name="q11"><label class="choice-label" for="q11_A">A</label>
+                <input type="radio" id="q11_B" name="q11"><label class="choice-label" for="q11_B">B</label>
+                <input type="radio" id="q11_C" name="q11"><label class="choice-label" for="q11_C">C</label>
+                <input type="radio" id="q11_D" name="q11"><label class="choice-label" for="q11_D">D</label>
+                <input type="radio" id="q11_E" name="q11"><label class="choice-label" for="q11_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">12.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q12_A" name="q12"><label class="choice-label" for="q12_A">A</label>
+                <input type="radio" id="q12_B" name="q12"><label class="choice-label" for="q12_B">B</label>
+                <input type="radio" id="q12_C" name="q12"><label class="choice-label" for="q12_C">C</label>
+                <input type="radio" id="q12_D" name="q12"><label class="choice-label" for="q12_D">D</label>
+                <input type="radio" id="q12_E" name="q12"><label class="choice-label" for="q12_E">E</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="qnum">13.</td>
+              <td colspan="4" class="choices">
+                <input type="radio" id="q13_A" name="q13"><label class="choice-label" for="q13_A">A</label>
+                <input type="radio" id="q13_B" name="q13"><label class="choice-label" for="q13_B">B</label>
+                <input type="radio" id="q13_C" name="q13"><label class="choice-label" for="q13_C">C</label>
+                <input type="radio" id="q13_D" name="q13"><label class="choice-label" for="q13_D">D</label>
+                <input type="radio" id="q13_E" name="q13"><label class="choice-label" for="q13_E">E</label>
+              </td>
+            </
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" aria-label="Questions 14 to 25">
+        <h3 style="margin:0 0 8px 0">Questions 14–25</h3>
+        <table>
+          <tbody>
+            <!-- Generate rows 14..25 -->
+            %RIGHT_ROWS%
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <div class="footer">
+      <div>Click a bubble to select your answer. Once selected the radio cannot be deselected (use a different option instead).</div>
+      <div>Printable — use your browser's Print (Ctrl/Cmd+P)</div>
     </div>
+  </div>
 
-    <script>
-      const leftBody = document.getElementById("leftCol");
-      const rightBody = document.getElementById("rightCol");
-      const total = 25;
-      const answers = new Array(total).fill(null);
-
-      function createRow(i) {
-        const tr = document.createElement("tr");
-        const tdNum = document.createElement("td");
-        tdNum.className = "qnum";
-        tdNum.textContent = i + 1 + ".";
-        tr.appendChild(tdNum);
-
-        const tdChoices = document.createElement("td");
-        tdChoices.colSpan = 4;
-        const choicesWrap = document.createElement("div");
-        choicesWrap.className = "choices";
-
-        ["A", "B", "C", "D", "E"].forEach((letter) => {
-          const btn = document.createElement("div");
-          btn.className = "bubble";
-          btn.setAttribute("role", "button");
-          btn.setAttribute("tabindex", "0");
-          btn.setAttribute("data-q", i);
-          btn.setAttribute("data-choice", letter);
-          btn.title = letter;
-          btn.textContent = letter;
-          btn.addEventListener("click", onBubbleClick);
-          choicesWrap.appendChild(btn);
-        });
-
-        tdChoices.appendChild(choicesWrap);
-        tr.appendChild(tdChoices);
-        return tr;
-      }
-
-      function onBubbleClick(e) {
-        const q = Number(this.dataset.q);
-        const c = this.dataset.choice;
-        if (answers[q] === null) {
-          answers[q] = c;
-          renderRow(q);
-        }
-      }
-
-      function renderRow(q) {
-        document.querySelectorAll('[data-q="' + q + '"]').forEach((el) => {
-          if (answers[q] === el.dataset.choice) el.classList.add("selected");
-          else el.classList.remove("selected");
-        });
-      }
-
-      for (let i = 0; i < total; i++) {
-        const row = createRow(i);
-        if (i < 13) leftBody.appendChild(row);
-        else rightBody.appendChild(row);
-      }
-
-      document.getElementById("downloadBtn").addEventListener("click", () => {
-        const name = document.getElementById("studentName").value.trim();
-        const date = document.getElementById("contestDate").value;
-        const rows = [];
-        for (let i = 0; i < total; i++) {
-          rows.push(i + 1 + ":" + (answers[i] || ""));
-        }
-        const header = `Name:${name} Date:${date}`;
-        const blob = new Blob([header + "\n" + rows.join("\n")], {
-          type: "text/plain",
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download =
-          (name ? name.replace(/\s+/g, "_") : "amc10_answers") + ".txt";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      });
-
-      document
-        .getElementById("printBtn")
-        .addEventListener("click", () => window.print());
-    </script>
-  </body>
+  <!-- Pure HTML/CSS implementation: radio inputs grouped per question ensure a choice cannot be cleared. -->
+</body>
 </html>
