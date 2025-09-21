@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AMC — Answer Sheet</title>
+    <style>
+      :root {
+        --accent: #0b76ef;
+        --paper: #fff;
+        --muted: #666;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, Helvetica, Arial;
+        background: #f4f6f9;
+        color: #111;
+        padding: 24px;
+      }
+      .sheet {
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--paper);
+        padding: 18px;
+        border-radius: 10px;
+        box-shadow: 0 6px 30px rgba(10, 20, 40, 0.06);
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .meta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .meta input {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #e3e7ee;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      button {
+        background: var(--accent);
+        color: #fff;
+        border: 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid rgba(11, 118, 239, 0.12);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .block {
+        background: #fbfdff;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #eef3fb;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 6px;
+        text-align: center;
+      }
+      .qnum {
+        width: 42px;
+        text-align: left;
+        padding-left: 8px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .choices {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+      .bubble {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #cbd6e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        user-select: none;
+      }
+      .bubble.selected {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .footer {
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      /* print styles */
+      @media print {
+        body {
+          background: #fff;
+        }
+        .sheet {
+          box-shadow: none;
+          border: none;
+        }
+        .controls {
+          display: none;
+        }
+        .bubble {
+          border: 1px solid #000;
+          background: transparent;
+          color: #000;
+        }
+        .bubble.selected {
+          background: #000;
+          color: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet" role="application" aria-label="AMC 10 Answer Sheet">
+      <header>
+        <div>
+          <h1>AMC 10 — Answer Sheet</h1>
+          <div class="meta">
+            <input
+              id="studentName"
+              placeholder="Name"
+              aria-label="Student name"
+            />
+            <input id="school" placeholder="School / Team (optional)" />
+            <input id="contestDate" type="date" />
+          </div>
+        </div>
+        <div class="controls">
+          <button id="downloadBtn">Download</button>
+          <button id="printBtn" class="ghost">Print</button>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="block" aria-label="Questions 1 to 13">
+          <h3 style="margin: 0 0 8px 0">Questions 1–13</h3>
+          <table>
+            <tbody id="leftCol"></tbody>
+          </table>
+        </section>
+
+        <section class="block" aria-label="Questions 14 to 25">
+          <h3 style="margin: 0 0 8px 0">Questions 14–25</h3>
+          <table>
+            <tbody id="rightCol"></tbody>
+          </table>
+        </section>
+      </main>
+
+      <div class="footer">
+        <div style="font-size: 13px; color: var(--muted)">
+          Click a bubble to set your answer. Once chosen, it cannot be removed.
+          Printable — use Print button or Ctrl/Cmd+P
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const leftBody = document.getElementById("leftCol");
+      const rightBody = document.getElementById("rightCol");
+      const total = 25;
+      const answers = new Array(total).fill(null);
+
+      function createRow(i) {
+        const tr = document.createElement("tr");
+        const tdNum = document.createElement("td");
+        tdNum.className = "qnum";
+        tdNum.textContent = i + 1 + ".";
+        tr.appendChild(tdNum);
+
+        const tdChoices = document.createElement("td");
+        tdChoices.colSpan = 4;
+        const choicesWrap = document.createElement("div");
+        choicesWrap.className = "choices";
+
+        ["A", "B", "C", "D", "E"].forEach((letter) => {
+          const btn = document.createElement("div");
+          btn.className = "bubble";
+          btn.setAttribute("role", "button");
+          btn.setAttribute("tabindex", "0");
+          btn.setAttribute("data-q", i);
+          btn.setAttribute("data-choice", letter);
+          btn.title = letter;
+          btn.textContent = letter;
+          btn.addEventListener("click", onBubbleClick);
+          choicesWrap.appendChild(btn);
+        });
+
+        tdChoices.appendChild(choicesWrap);
+        tr.appendChild(tdChoices);
+        return tr;
+      }
+
+      function onBubbleClick(e) {
+        const q = Number(this.dataset.q);
+        const c = this.dataset.choice;
+        if (answers[q] === null) {
+          answers[q] = c;
+          renderRow(q);
+        }
+      }
+
+      function renderRow(q) {
+        document.querySelectorAll('[data-q="' + q + '"]').forEach((el) => {
+          if (answers[q] === el.dataset.choice) el.classList.add("selected");
+          else el.classList.remove("selected");
+        });
+      }
+
+      for (let i = 0; i < total; i++) {
+        const row = createRow(i);
+        if (i < 13) leftBody.appendChild(row);
+        else rightBody.appendChild(row);
+      }
+
+      document.getElementById("downloadBtn").addEventListener("click", () => {
+        const name = document.getElementById("studentName").value.trim();
+        const date = document.getElementById("contestDate").value;
+        const rows = [];
+        for (let i = 0; i < total; i++) {
+          rows.push(i + 1 + ":" + (answers[i] || ""));
+        }
+        const header = `Name:${name} Date:${date}`;
+        const blob = new Blob([header + "\n" + rows.join("\n")], {
+          type: "text/plain",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download =
+          (name ? name.replace(/\s+/g, "_") : "amc10_answers") + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      document
+        .getElementById("printBtn")
+        .addEventListener("click", () => window.print());
+    </script>
+  </body>
+</html>
