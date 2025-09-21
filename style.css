@@ -1,0 +1,121 @@
+:root {
+  --accent: #0b76ef;
+  --paper: #fff;
+  --muted: #666;
+  --bubble-size: 34px;
+  --gap: 10px;
+  --radius: 50%;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: Inter, system-ui, Helvetica, Arial;
+  background: #f4f6f9;
+  color: #111;
+  padding: 24px;
+}
+.sheet {
+  max-width: 960px;
+  margin: 0 auto;
+  background: var(--paper);
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 30px rgba(10, 20, 40, 0.06);
+}
+.title {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.block {
+  background: #fbfdff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #eef3fb;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 6px;
+  text-align: center;
+}
+.qnum {
+  width: 42px;
+  text-align: left;
+  padding-left: 8px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.choices {
+  display: flex;
+  gap: var(--gap);
+  justify-content: center;
+  align-items: center;
+}
+.choice-label {
+  width: var(--bubble-size);
+  height: var(--bubble-size);
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius);
+  border: 2px solid #cbd6e6;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 700;
+}
+input[type="radio"]:checked + label {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  body {
+    background: #fff;
+  }
+  .sheet {
+    box-shadow: none;
+    border: none;
+  }
+  input[type="radio"] {
+    display: none;
+  }
+  .choice-label {
+    border: 1px solid #000;
+    color: #000;
+  }
+  input[type="radio"]:checked + label {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+}
